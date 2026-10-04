@@ -1,0 +1,10 @@
+import express from 'express'; import cors from 'cors'; import rateLimit from 'express-rate-limit'; import 'dotenv/config'; import path from 'path';
+import auth from './routes/auth.js'; import complaints from './routes/complaints.js'; import departments from './routes/departments.js'; import notifications from './routes/notifications.js'; import map from './routes/map.js';
+const app=express(); const port=process.env.PORT||5000;
+app.use(cors({origin:process.env.CLIENT_URL||'http://localhost:5173'}));
+app.use(express.json({limit:'1mb'})); app.use('/uploads',express.static(path.resolve(process.env.UPLOAD_DIR||'uploads')));
+app.use('/api/auth',rateLimit({windowMs:15*60*1000,max:100}),auth);
+app.use('/api/complaints',complaints); app.use('/api/departments',departments); app.use('/api/notifications',notifications); app.use('/api/map',map);
+app.get('/api/health',(_,res)=>res.json({ok:true,service:'CivicFix'}));
+app.use((err,req,res,next)=>{console.error(err);res.status(400).json({message:err.message||'Request failed'});});
+app.listen(port,()=>console.log(`CivicFix server on http://localhost:${port}`));
