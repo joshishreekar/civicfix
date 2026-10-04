@@ -1,12 +1,12 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '../services/api';
 import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 function ComplaintMap({ latitude, longitude, publicId }) {
-  const mapRef = useState(null)[0];
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (!latitude || !longitude) return;
@@ -18,7 +18,7 @@ function ComplaintMap({ latitude, longitude, publicId }) {
       return;
     }
 
-    const map = L.map(mapRef).setView(
+    const map = L.map(mapRef.current).setView(
       [lat, lng],
       16
     );
@@ -46,11 +46,7 @@ function ComplaintMap({ latitude, longitude, publicId }) {
 
   return (
     <div
-      ref={(el) => {
-        if (el) {
-          mapRef = el;
-        }
-      }}
+      ref={mapRef}
       className="h-56 w-full rounded-xl"
     />
   );
